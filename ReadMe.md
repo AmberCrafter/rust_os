@@ -1,3 +1,10 @@
+Diary
+
+[2022-07-31]
+VGA Text Mode: Implement print to console
+
+[2022-07-30]
+Hello world!
 1. init the environment
  - setup rust-toolchain
  - setup cargo.toml

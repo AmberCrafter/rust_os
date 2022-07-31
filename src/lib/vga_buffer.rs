@@ -107,7 +107,7 @@ impl Writer {
         // shift up each row one line and clear last one
         for row in 1..BUFFER_HEIGHT {
             for col in 0..BUFFER_WIDTH {
-                let value = self.buffer.chars[row-1][col].read();
+                let value = self.buffer.chars[row][col].read();
                 self.buffer.chars[row-1][col].write(value);
             }
         }

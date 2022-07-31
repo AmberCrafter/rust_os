@@ -12,8 +12,8 @@ static HELLO: &[u8] = b"Hello World!";
 #[no_mangle]
 pub extern "C" fn _start() -> ! {
     println!("hello macro{}", " !");
-    vga_buffer::test_hello_word();
-    vga_buffer::WRITER.lock().write_str("test message!").unwrap();
+    // vga_buffer::test_hello_word();
+    // vga_buffer::WRITER.lock().write_str("test message!").unwrap();
     println!("hello macro{}", " !");
 
     loop {}

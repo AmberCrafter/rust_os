@@ -1,5 +1,7 @@
-// color enum
+use volatile::Volatile;
+use core::fmt;
 
+// color enum
 // In VGA Text Mod, color has only 4bit for foreground color and 3bit for background color
 // which the 4-th bit is light version, thus the backround color didn't need
 #[allow(deadcode)]
@@ -52,9 +54,10 @@ const BUFFER_HEIGHT: usize = 25;
 const BUFFER_WIDTH: usize = 80;
 
 // Screen Buffer
+// use volatile wrapper ScreenChar to prevent optimization modifed these segments
 #[repr(transparent)]
 struct Buffer {
-    chars: [[ScreenChar; BUFFER_WIDTH]; BUFFER_HEIGHT]
+    chars: [[Volatile<ScreenChar>; BUFFER_WIDTH]; BUFFER_HEIGHT]
 }
 // ----------------------------------------------------------------------------
 
@@ -80,10 +83,10 @@ impl Writer {
 
                 let color_code = self.color_code;
                 
-                self.buffer.chars[row][col] = ScreenChar{
+                self.buffer.chars[row][col].write(ScreenChar{
                     ascii_character: byte,
                     color_code
-                };
+                });
                 self.column_position+=1;
             }
         }
@@ -101,14 +104,36 @@ impl Writer {
     }
 
     pub fn newline(&mut self) {
-        todo!()
+        // shift up each row one line and clear last one
+        for row in 1..BUFFER_HEIGHT {
+            for col in 0..BUFFER_WIDTH {
+                let value = self.buffer.chars[row-1][col].read();
+                self.buffer.chars[row-1][col].write(value);
+            }
+        }
+        self.clear_row(BUFFER_HEIGHT-1);
+        self.column_position = 0;
+    }
+
+    fn clear_row(&mut self, row: usize) {
+        let blank = ScreenChar { ascii_character: b' ', color_code: self.color_code };
+        for col in 0..BUFFER_WIDTH {
+            self.buffer.chars[row][col].write(blank);
+        }
     }
 }
 
-
+// formatting trait
+impl fmt::Write for Writer {
+    fn write_str(&mut self, s: &str) -> fmt::Result {
+        self.write_string(s);
+        Ok(())
+    }
+}
 
 // test case
 pub fn test_hello_word() {
+    use core::fmt::Write;
     // init writer
     let mut writer = Writer {
         column_position: 0,
@@ -118,5 +143,6 @@ pub fn test_hello_word() {
 
     writer.write_byte(b'H');
     writer.write_string("ello W");
-    writer.write_string("orld");
+    // writer.write_string("orld");
+    write!(writer, "or{}. pi:{}", "ld", 3.1415926).unwrap();
 }

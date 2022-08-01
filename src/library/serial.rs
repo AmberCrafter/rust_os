@@ -22,7 +22,7 @@ pub fn _print(args: ::core::fmt::Arguments) {
 #[macro_export]
 macro_rules! serial_print {
     ($($arg:tt)*) => {
-        $crate::lib::serial::_print(format_args!($($arg)*));
+        $crate::library::serial::_print(format_args!($($arg)*));
     };
 }
 
@@ -30,7 +30,7 @@ macro_rules! serial_print {
 #[macro_export]
 macro_rules! serial_println {
     () => {
-        ($crate::lib::serial::_print("\n"));
+        ($crate::library::serial::_print("\n"));
     };
     ($fmt:expr) => {
         ($crate::serial_print!(concat!($fmt, "\n")));

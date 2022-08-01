@@ -1,5 +1,9 @@
 Diary
 
+[2022-08-01]
+1. modified the library structure. Inspired by apogeeoak.
+ref. https://github.com/apogeeoak/os
+
 [2022-07-31]
 VGA Text Mode: Implement print to console
 

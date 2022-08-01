@@ -16,3 +16,16 @@ bootloader = "0.9.8"
 volatile = "0.2.6"  # due to newer version need to impl Deref trait
 lazy_static = {version="1.0", features = ["spin_no_std"]}
 spin = "0.9.4"
+x86_64 = "0.14.10"
+uart_16550 = "0.2.18"
+
+
+[package.metadata.bootimage]
+test-args = [
+    "-device", "isa-debug-exit,iobase=0xf4,iosize=0x04",
+    "-serial", "stdio",
+    "-display", "none",
+]
+# calculation is process success code = 0x10, and qemu exit code will be set as (0x10 << 1) | 1 = 33
+test-success-exit-code = 33  
+test-timeout = 300

@@ -5,9 +5,9 @@
 // #![test_runner(test_runner)]
 #![reexport_test_harness_main = "test_main"]
 
-use crate::lib::serial;
-use crate::lib::qemu;
-use crate::lib::vga_buffer;
+use crate::libs::serial;
+use crate::libs::qemu;
+use crate::libs::vga_buffer;
 
 use crate::serial_println;
 use crate::serial_print;

@@ -176,3 +176,14 @@ pub fn test_hello_word() {
     // writer.write_string("orld");
     write!(writer, "or{}. pi:{}", "ld", 3.1415926).unwrap();
 }
+
+
+#[test_case]
+fn test_vga_print_is_show() {
+    let s = "Test VGA print is show on screen.";
+    println!("{}", s);
+    for (i, c) in s.chars().enumerate() {
+        let screenchar = WRITER.lock().buffer.chars[BUFFER_HEIGHT-2][i].read();
+        assert_eq!(c, char::from(screenchar.ascii_character));
+    }
+}

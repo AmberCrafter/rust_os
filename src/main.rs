@@ -15,6 +15,7 @@ use core::fmt::Write;
 mod lib;
 use lib::vga_buffer;
 use lib::qemu;
+use lib::unittest;
 
 static HELLO: &[u8] = b"Hello World!";
 
@@ -25,27 +26,27 @@ pub extern "C" fn _start() -> ! {
     // vga_buffer::WRITER.lock().write_str("test message!").unwrap();
     println!("hello macro{}", " !");
 
-    #[cfg(test)]
-    test_main();
+    // #[cfg(test)]
+    // test_main();
 
     loop {}
 }
 
-#[cfg(not(test))]
-#[panic_handler]
-fn panic(info: &PanicInfo) -> ! {
-    println!("{}", info);
-    loop {}
-}
+// #[cfg(not(test))]
+// #[panic_handler]
+// fn panic(info: &PanicInfo) -> ! {
+//     println!("{}", info);
+//     loop {}
+// }
 
-#[cfg(test)]
-#[panic_handler]
-fn panic(info: &PanicInfo) -> ! {
-    println!("[Failed]");
-    println!("Error: {}\n", info);
-    qemu::exit_qemu(qemu::QemuExitCode::Failed);
-    loop {}
-}
+// #[cfg(test)]
+// #[panic_handler]
+// fn panic(info: &PanicInfo) -> ! {
+//     println!("[Failed]");
+//     println!("Error: {}\n", info);
+//     qemu::exit_qemu(qemu::QemuExitCode::Failed);
+//     loop {}
+// }
 
 
 
@@ -60,7 +61,7 @@ where
     T: Fn()
 {
     fn run(&self) -> () {
-        serial_print!("{}...\t", core::any::type_name::<T>());
+        serial_print!("{}... ", core::any::type_name::<T>());
         self();
         serial_println!("[Ok]");
     }
@@ -79,8 +80,20 @@ fn test_runner(tests: &[&dyn Testable]) {
 // ----------------------------------------------------------------------------
 
 
-// test case
-#[test_case]
-fn trivial_assertion() {
-    assert_eq!(1,1);
-}
+// // test case
+// #[test_case]
+// fn trivial_assertion() {
+//     assert_eq!(1,1);
+// }
+
+// #[test_case]
+// fn test_vga_print_single() {
+//     println!("Testing VGA single print!");
+// }
+
+// #[test_case]
+// fn test_vga_print_multiple() {
+//     for i in 0..200 {
+//         println!("Testing VGA multiple prints!: {}", i);
+//     }
+// }

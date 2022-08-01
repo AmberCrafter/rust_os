@@ -4,3 +4,4 @@ pub mod serial;
 pub mod unittest;
 pub mod bootor;
 pub mod interrupts;
+pub mod gdt;

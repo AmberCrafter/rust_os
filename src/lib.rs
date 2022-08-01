@@ -7,11 +7,12 @@
 #![feature(abi_x86_interrupt)]
 
 pub mod library;
-use library::interrupts;
+use library::{interrupts, gdt};
 pub use library::unittest;
 use core::panic::PanicInfo;
 
 pub fn init() {
+    gdt::init();
     interrupts::init_idt();
 }
 

@@ -4,6 +4,8 @@
 #![test_runner(rustos::unittest::test_runner)]
 #![reexport_test_harness_main = "test_main"]
 
+#![feature(abi_x86_interrupt)]
+
 mod library;
 
 use core::panic::PanicInfo;
@@ -16,6 +18,11 @@ mod kernel {
     use rustos::println;
     pub fn main() {
         println!("Hello world");
+
+        rustos::init();
+        x86_64::instructions::interrupts::int3();
+
+        println!("It did not crash!");
     }
     
     #[panic_handler]

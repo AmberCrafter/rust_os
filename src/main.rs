@@ -7,7 +7,7 @@
 mod library;
 
 use core::panic::PanicInfo;
-use library::bootloader;
+use library::bootor;
 
 #[cfg(not(test))]
 entry_point!(kernel::main);

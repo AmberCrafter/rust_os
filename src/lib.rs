@@ -7,7 +7,7 @@
 
 pub mod library;
 pub use library::unittest;
-pub use library::bootloader;
+// pub use library::bootor::entry_point;
 use core::panic::PanicInfo;
 
 /// Entry point for `cargo test`

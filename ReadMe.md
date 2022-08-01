@@ -3,6 +3,15 @@ Diary
 [2022-08-01]
 1. modified the library structure. Inspired by apogeeoak.
 ref. https://github.com/apogeeoak/os
+2. finished test harness
+Note. Sometimes we will set 
+```
+// Cargo.toml
+[[test]]
+name = {tests/filename}
+harness = false
+```
+due to we need a ordering testing scenario.
 
 [2022-07-31]
 VGA Text Mode: Implement print to console

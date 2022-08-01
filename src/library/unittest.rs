@@ -43,4 +43,10 @@ pub fn test_panic_handler(info: &PanicInfo) -> ! {
     loop {}
 }
 
+pub fn test_should_panic_handler(info: &PanicInfo) -> ! {
+    println!("[Ok]");
+    qemu::exit_qemu(qemu::QemuExitCode::Success);
+    loop {}
+}
+
 // ----------------------------------------------------------------------------

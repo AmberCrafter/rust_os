@@ -7,26 +7,27 @@
 
 pub mod library;
 pub use library::unittest;
+pub use library::bootloader;
 use core::panic::PanicInfo;
 
 /// Entry point for `cargo test`
 #[cfg(test)]
-#[no_mangle]
-pub extern "C" fn _start() -> ! {
-    test_main();
-    loop {}
-}
-
-/// This function is called on panic.
-#[cfg(not(test))]
-#[panic_handler]
-fn panic(info: &PanicInfo) -> ! {
-    println!("{}", info);
-    loop {}
-}
+entry_point!(tests::main);
+// #[no_mangle]
+// pub extern "C" fn _start() -> ! {
+//     test_main();
+//     loop {}
+// }
 
 #[cfg(test)]
-#[panic_handler]
-fn panic(info: &PanicInfo) -> ! {
-    crate::unittest::test_panic_handler(info)
+mod tests{
+    pub fn main() {
+        super::test_main();
+    }
+
+    #[panic_handler]
+    fn panic(info: &super::PanicInfo) -> ! {
+        crate::unittest::test_panic_handler(info)
+    }
 }
+

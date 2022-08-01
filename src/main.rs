@@ -4,29 +4,37 @@
 #![test_runner(rustos::unittest::test_runner)]
 #![reexport_test_harness_main = "test_main"]
 
+mod library;
+
 use core::panic::PanicInfo;
-use rustos::println;
+use library::bootloader;
 
-#[no_mangle]
-pub extern "C" fn _start() -> ! {
-    println!("Hello World{}", "!");
-
-    #[cfg(test)]
-    test_main();
-
-    loop {}
+#[cfg(not(test))]
+entry_point!(kernel::main);
+#[cfg(not(test))]
+mod kernel {
+    use rustos::println;
+    pub fn main() {
+        println!("Hello world");
+    }
+    
+    #[panic_handler]
+    fn panic(info: &super::PanicInfo) -> ! {
+        super::println!("{}", info);
+        loop {}
+    }
 }
 
-// /// This function is called on panic.
-// #[cfg(not(test))]
-// #[panic_handler]
-// fn panic(info: &PanicInfo) -> ! {
-//     println!("{}", info);
-//     loop {}
-// }
-
-// #[cfg(test)]
-// #[panic_handler]
-// fn panic(info: &PanicInfo) -> ! {
-//     rustos::unittest::test_panic_handler(info)
-// }
+#[cfg(test)]
+entry_point!(tests::main);
+#[cfg(test)]
+mod tests {
+    pub fn main() {
+        super::test_main();
+    }
+    
+    #[panic_handler]
+    fn panic(info: &super::PanicInfo) -> ! {
+        rustos::unittest::test_panic_handler(info)
+    }
+}

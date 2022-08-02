@@ -77,7 +77,16 @@ extern "x86-interrupt" fn timer_interrupt_handler(
 extern "x86-interrupt" fn keyboard_interrupt_handler(
     _stack_frame: InterruptStackFrame
 ) {
-    print!("[Keyboard]");
+    use x86_64::instructions::port::Port;
+
+    // PS/2 I/O port used 0x60 on controller
+    let mut port = Port::new(0x60);
+    let scancode: u8 = unsafe {
+        port.read()
+    };
+
+    print!("{}", scancode);
+
     unsafe {
         PICS.lock()
             .notify_end_of_interrupt(InterruptIndex::Keyboard.as_u8());

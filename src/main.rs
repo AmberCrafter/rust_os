@@ -20,7 +20,11 @@ mod kernel {
         println!("Hello world");
 
         rustos::init();
-        // x86_64::instructions::interrupts::int3();
+        
+        use x86_64::registers::control::Cr3;
+        let (level_4_page_table, _) = Cr3::read();
+        println!("Level 4 page table at: {:?}", level_4_page_table);
+
 
         println!("It did not crash!");
         // loop {}

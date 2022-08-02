@@ -9,8 +9,9 @@ pub fn hlt_loop() -> !{
 #[macro_export]
 macro_rules! entry_point {
     ($func:expr) => {
+        use bootloader::BootInfo;
         #[no_mangle]
-        pub extern "C" fn _start() -> ! {
+        pub extern "C" fn _start(boot_info: &'static BootInfo) -> ! {
             $func();
             loop {}
         }

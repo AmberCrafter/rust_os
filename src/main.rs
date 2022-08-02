@@ -24,14 +24,14 @@ mod kernel {
 
         println!("It did not crash!");
         // loop {}
-        // rustos::hlt_loop()
+        rustos::hlt_loop()
     }
     
     #[panic_handler]
     fn panic(info: &super::PanicInfo) -> ! {
         super::println!("{}", info);
-        // rustos::hlt_loop()
-        loop {}
+        // loop {}
+        rustos::hlt_loop()
     }
 }
 

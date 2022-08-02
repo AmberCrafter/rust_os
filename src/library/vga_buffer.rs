@@ -134,6 +134,8 @@ impl fmt::Write for Writer {
 // global interface
 use lazy_static::lazy_static;
 use spin::Mutex;
+
+use crate::library::serial::SERIAL1;
 lazy_static! {
     pub static ref WRITER: Mutex<Writer> = Mutex::new(Writer {
         column_position: 0,
@@ -158,7 +160,15 @@ macro_rules! println {
 #[doc(hidden)]
 pub fn _print(args: fmt::Arguments) {
     use core::fmt::Write;
-    WRITER.lock().write_fmt(args).unwrap();
+    use x86_64::instructions::interrupts;
+
+    interrupts::without_interrupts(|| {
+        // WRITER.lock().write_fmt(args).unwrap();
+        SERIAL1
+            .lock()
+            .write_fmt(args)
+            .expect("Printing to serial failed");
+    });
 }
 
 // test case
@@ -180,10 +190,18 @@ pub fn test_hello_word() {
 
 #[test_case]
 fn test_vga_print_is_show() {
+    use x86_64::instructions::interrupts;
+    use core::fmt::Write;
     let s = "Test VGA print is show on screen.";
-    println!("{}", s);
-    for (i, c) in s.chars().enumerate() {
-        let screenchar = WRITER.lock().buffer.chars[BUFFER_HEIGHT-2][i].read();
-        assert_eq!(c, char::from(screenchar.ascii_character));
-    }
+    
+    interrupts::without_interrupts(|| {
+        let mut writer = WRITER.lock();
+        writeln!(
+            writer, "\n{}", s
+        ).expect("writeln falied");
+        for (i, c) in s.chars().enumerate() {
+            let screenchar = writer.buffer.chars[BUFFER_HEIGHT-2][i].read();
+            assert_eq!(c, char::from(screenchar.ascii_character));
+        }
+    });
 }

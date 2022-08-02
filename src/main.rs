@@ -12,7 +12,7 @@ use core::panic::PanicInfo;
 use library::bootor;
 
 #[cfg(not(test))]
-entry_point!(kernel::main);
+entry_point_infinit_print!(kernel::main);
 #[cfg(not(test))]
 mod kernel {
     use rustos::println;

@@ -5,7 +5,7 @@
 // #![reexport_test_harness_main = "test_main"]
 
 use core::panic::PanicInfo;
-use rustos::{library::qemu, entry_point, serial_println};
+use rustos::{library::qemu, entry_point, serial_print, serial_println, hlt_loop};
 
 
 entry_point!(wrap_should_failed);
@@ -14,7 +14,7 @@ fn wrap_should_failed() {
     should_failed();
     serial_println!("[This test didn't panic!]");
     qemu::exit_qemu(qemu::QemuExitCode::Failed);
-    loop {}
+    hlt_loop()
 }
 
 // pub fn test_runner(tests: &[&dyn Fn()]) {
@@ -31,12 +31,12 @@ fn wrap_should_failed() {
 fn panic(_info: &PanicInfo)->!{
     serial_println!("[Ok]");
     qemu::exit_qemu(qemu::QemuExitCode::Success);
-    loop {}
+    hlt_loop()
 }
 
 // test case
 // #[test_case]
 fn should_failed() {
-    serial_println!("tests/should_panic.rs::should_failed...");
+    serial_print!("tests/should_panic.rs::should_failed...");
     assert_eq!(0,1);
 }

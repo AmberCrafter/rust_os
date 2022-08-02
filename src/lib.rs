@@ -20,6 +20,12 @@ pub fn init() {
     x86_64::instructions::interrupts::enable();
 }
 
+pub fn hlt_loop() -> ! {
+    loop {
+        x86_64::instructions::hlt();
+    }
+}
+
 
 /// Entry point for `cargo test`
 #[cfg(test)]
@@ -32,6 +38,8 @@ entry_point!(tests::main);
 
 #[cfg(test)]
 mod tests{
+    use super::{print, println};
+
     use x86_64;
 
     pub fn main() {
@@ -47,8 +55,11 @@ mod tests{
 
     #[test_case]
     fn test_breakpoint_exception() {
+        print!("src/lib::test_breakpoint_exception...");
+
         // invoke a breakpoint exception
         x86_64::instructions::interrupts::int3();
+        println!("src/lib::test_breakpoint_exception...");
     }
 }
 

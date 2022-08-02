@@ -9,13 +9,13 @@ use core::panic::PanicInfo;
 
 use lazy_static::lazy_static;
 use rustos::library::{self, qemu};
-use rustos::{entry_point, serial_println};
+use rustos::{entry_point, serial_print, serial_println, hlt_loop};
 use x86_64::structures::idt::{InterruptDescriptorTable, InterruptStackFrame};
 
 entry_point!(main);
 
 fn main() {
-    serial_println!("test/stack_overflow: testing...");
+    serial_print!("test/stack_overflow: testing...");
     library::gdt::init();
     init_test_idt();
 
@@ -58,5 +58,5 @@ extern "x86-interrupt" fn test_double_fault_handler(
 ) -> ! {
     serial_println!("[Ok]");
     qemu::exit_qemu(qemu::QemuExitCode::Success);
-    loop {}
+    hlt_loop()
 }

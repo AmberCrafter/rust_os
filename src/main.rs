@@ -12,7 +12,7 @@ use core::panic::PanicInfo;
 use library::bootor;
 
 #[cfg(not(test))]
-entry_point_infinit_print!(kernel::main);
+entry_point!(kernel::main);
 #[cfg(not(test))]
 mod kernel {
     use rustos::println;
@@ -20,14 +20,17 @@ mod kernel {
         println!("Hello world");
 
         rustos::init();
-        x86_64::instructions::interrupts::int3();
+        // x86_64::instructions::interrupts::int3();
 
         println!("It did not crash!");
+        // loop {}
+        // rustos::hlt_loop()
     }
     
     #[panic_handler]
     fn panic(info: &super::PanicInfo) -> ! {
         super::println!("{}", info);
+        // rustos::hlt_loop()
         loop {}
     }
 }
@@ -36,8 +39,11 @@ mod kernel {
 entry_point!(tests::main);
 #[cfg(test)]
 mod tests {
-    pub fn main() {
+    use rustos::hlt_loop;
+
+    pub fn main() -> !{
         super::test_main();
+        hlt_loop()
     }
     
     #[panic_handler]

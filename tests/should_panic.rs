@@ -8,7 +8,12 @@ use core::panic::PanicInfo;
 use rustos::{library::qemu, entry_point, serial_print, serial_println, hlt_loop};
 
 
-entry_point!(test_main);
+entry_point!(main);
+
+fn main() -> ! {
+    test_main();
+    hlt_loop()
+}
 
 pub fn test_runner(tests: &[&dyn Fn()]) {
     serial_println!("Running {} tests", tests.len());

@@ -14,15 +14,15 @@ use x86_64::structures::idt::{InterruptDescriptorTable, InterruptStackFrame};
 
 entry_point!(main);
 
-fn main() {
+fn main() -> ! {
     serial_print!("test/stack_overflow: testing...");
     library::gdt::init();
     init_test_idt();
 
     stack_overflow();
 
-    panic!("Execution continued after stack overflow.")
-
+    panic!("Execution continued after stack overflow.");
+    hlt_loop()
 }
 
 #[allow(unconditional_recursion)]

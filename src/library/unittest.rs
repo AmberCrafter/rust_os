@@ -2,6 +2,7 @@ use super::qemu;
 // use super::serial;
 // use super::vga_buffer;
 
+use crate::library::bootor::hlt_loop;
 use crate::serial_println;
 use crate::serial_print;
 use crate::print;
@@ -40,13 +41,13 @@ pub fn test_panic_handler(info: &PanicInfo) -> ! {
     println!("Error: {}\n", info);
     
     qemu::exit_qemu(qemu::QemuExitCode::Failed);
-    loop {}
+    hlt_loop()
 }
 
 pub fn test_should_panic_handler(info: &PanicInfo) -> ! {
     println!("[Ok]");
     qemu::exit_qemu(qemu::QemuExitCode::Success);
-    loop {}
+    hlt_loop()
 }
 
 // ----------------------------------------------------------------------------

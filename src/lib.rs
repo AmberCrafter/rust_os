@@ -6,6 +6,7 @@
 
 #![feature(abi_x86_interrupt)]
 #![feature(alloc_error_handler)] 
+#![feature(const_mut_refs)]
 
 extern crate alloc;
 
@@ -23,7 +24,13 @@ use x86_64::VirtAddr;
 
 #[global_allocator]
 // static ALLOCATOR: library::allocator::Dummy = library::allocator::Dummy;
-static ALLOCATOR: LockedHeap = LockedHeap::empty();
+// static ALLOCATOR: LockedHeap = LockedHeap::empty();
+// static ALLOCATOR: allocator::Locked<allocator::bump::BumpAllocator>
+//     = allocator::Locked::new(allocator::bump::BumpAllocator::new());
+// static ALLOCATOR: allocator::Locked<allocator::linked_list::LinkedListAllocator>
+//     = allocator::Locked::new(allocator::linked_list::LinkedListAllocator::new());
+static ALLOCATOR: allocator::Locked<allocator::fixed_size_block::FixedSizeBlockAllocator>
+    = allocator::Locked::new(allocator::fixed_size_block::FixedSizeBlockAllocator::new());
 
 #[alloc_error_handler]
 fn alloc_error_handler(layout: alloc::alloc::Layout) -> ! {
@@ -52,8 +59,11 @@ pub fn init(boot_info: &'static BootInfo) {
         .expect("heap initializetion failed");
 
     unsafe {
-        let heap_start = VirtAddr::new(allocator::HEAP_START as u64);
-        ALLOCATOR.lock().init(heap_start.as_mut_ptr(), allocator::HEAP_SIZE);
+        // used for linked_list_allocator crate
+        // let heap_start = VirtAddr::new(allocator::HEAP_START as u64);
+        // ALLOCATOR.lock().init(heap_start.as_mut_ptr(), allocator::HEAP_SIZE);  
+        
+        ALLOCATOR.lock().init(allocator::HEAP_START, allocator::HEAP_SIZE);
     };
 }
 

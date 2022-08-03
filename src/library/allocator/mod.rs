@@ -1,22 +1,13 @@
-use core::ptr::null_mut;
+pub mod dummy;
+pub mod bump;
+pub mod linked_list;
+pub mod fixed_size_block;
 
-use alloc::alloc::{GlobalAlloc, Layout};
 use x86_64::{structures::paging::{Mapper, Size4KiB, FrameAllocator, mapper::MapToError, Page, PageTableFlags}, VirtAddr};
 
-pub struct Dummy;
 // virtural memory start position
 pub const HEAP_START: usize = 0x_4444_4444_0000;
 pub const HEAP_SIZE: usize = 100*1024;
-
-#[allow(unused)]
-unsafe impl GlobalAlloc for Dummy {
-    unsafe fn alloc(&self, layout: Layout) -> *mut u8 {
-        null_mut()
-    }
-    unsafe fn dealloc(&self, ptr: *mut u8, layout: Layout) {
-        panic!("dealloc should be never called")
-    }
-}
 
 #[allow(unused)]
 pub fn init_heap(
@@ -45,4 +36,40 @@ pub fn init_heap(
         };
     }
     Ok(())
+}
+
+
+pub struct Locked<A> {
+    inner: spin::Mutex<A>,
+}
+
+impl<A> Locked<A> {
+    pub const fn new(inner: A) -> Self {
+        Locked { inner: spin::Mutex::new(inner) }
+    }
+
+    pub fn lock(&self) -> spin::MutexGuard<A> {
+        self.inner.lock()
+    }
+}
+
+fn align_up(addr: usize, align: usize) -> usize {
+    // let remainder = addr % align;
+    // if remainder == 0 {
+    //     addr
+    // } else {
+    //     addr-remainder+align
+    // }
+
+
+    // example
+    // addr:  9 (0001_0001)
+    // align: 4 (0000_0100)
+    //
+    // (addr + align -1): 0001_0100
+    // (align - 1):       0000_0011
+    // !(align - 1):      1111_1100
+    // (addr + align -1) & !(align-1):  0001_0100 (12)
+
+    (addr + align -1) & !(align-1)
 }

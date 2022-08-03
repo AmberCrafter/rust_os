@@ -7,7 +7,7 @@ pub fn hlt_loop() -> !{
 
 
 #[macro_export]
-macro_rules! entry_point {
+macro_rules! custom_entry_point {
     ($func:expr) => {
         use bootloader::BootInfo;
         #[no_mangle]

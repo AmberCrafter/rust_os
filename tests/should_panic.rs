@@ -5,12 +5,14 @@
 #![reexport_test_harness_main = "test_main"]
 
 use core::panic::PanicInfo;
-use rustos::{library::qemu, entry_point, serial_print, serial_println, hlt_loop};
+use rustos::{library::qemu, serial_print, serial_println, hlt_loop};
+use bootloader::entry_point;
+use bootloader::BootInfo;
 
 
 entry_point!(main);
 
-fn main() -> ! {
+fn main(boot_info: &'static BootInfo) -> ! {
     test_main();
     hlt_loop()
 }

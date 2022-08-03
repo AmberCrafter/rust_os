@@ -49,6 +49,7 @@ lazy_static! {
     };
 }
 
+#[allow(unused)]
 pub fn init_idt() {
     IDT.load();
 }
@@ -65,7 +66,7 @@ extern "x86-interrupt" fn double_fault_handler(
     _error_code: u64
 ) -> ! {
     panic!("Exception: DOUBLE FAULT\n{:#?}", stack_frame);
-    hlt_loop();
+    // hlt_loop();
 }
 
 extern "x86-interrupt" fn timer_interrupt_handler(
@@ -77,7 +78,7 @@ extern "x86-interrupt" fn timer_interrupt_handler(
         PICS.lock()
             .notify_end_of_interrupt(InterruptIndex::Timer.as_u8());
     }
-    hlt_loop();
+    // hlt_loop();
 }
 
 extern "x86-interrupt" fn keyboard_interrupt_handler(
@@ -113,12 +114,12 @@ extern "x86-interrupt" fn keyboard_interrupt_handler(
             }
         }
     }
-    
+
     unsafe {
         PICS.lock()
             .notify_end_of_interrupt(InterruptIndex::Keyboard.as_u8());
     }
-    hlt_loop();
+    // hlt_loop();
 }
 
 extern "x86-interrupt" fn page_fault_handler(

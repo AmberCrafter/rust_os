@@ -3,6 +3,7 @@
 use lazy_static::lazy_static;
 use x86_64::{structures::{tss::TaskStateSegment, gdt::{GlobalDescriptorTable, Descriptor}}, VirtAddr, registers::segmentation::SegmentSelector};
 
+#[allow(unused)]
 struct Selectors {
     code_selector: SegmentSelector,
     tss_selector: SegmentSelector,
@@ -47,6 +48,7 @@ lazy_static! {
     };
 }
 
+#[allow(unused)]
 pub fn init() {
     use x86_64::instructions::tables::load_tss;
     use x86_64::instructions::segmentation::{CS, Segment};

@@ -5,7 +5,7 @@ use super::qemu;
 use crate::library::bootor::hlt_loop;
 use crate::serial_println;
 use crate::serial_print;
-use crate::print;
+// use crate::print;
 use crate::println;
 
 use core::panic::PanicInfo;
@@ -28,6 +28,7 @@ where
 
 
 // tester implement
+#[allow(unused)]
 pub fn test_runner(tests: &[&dyn Testable]) {
     serial_println!("Running {} tests", tests.len());
     for test in tests {
@@ -36,6 +37,7 @@ pub fn test_runner(tests: &[&dyn Testable]) {
     qemu::exit_qemu(qemu::QemuExitCode::Success);
 }
 
+#[allow(unused)]
 pub fn test_panic_handler(info: &PanicInfo) -> ! {
     println!("[Failed]");
     println!("Error: {}\n", info);
@@ -44,7 +46,8 @@ pub fn test_panic_handler(info: &PanicInfo) -> ! {
     hlt_loop()
 }
 
-pub fn test_should_panic_handler(info: &PanicInfo) -> ! {
+#[allow(unused)]
+pub fn test_should_panic_handler(_info: &PanicInfo) -> ! {
     println!("[Ok]");
     qemu::exit_qemu(qemu::QemuExitCode::Success);
     hlt_loop()

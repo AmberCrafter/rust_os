@@ -5,12 +5,13 @@
 // #![reexport_test_harness_main = "test_main"]
 
 use core::panic::PanicInfo;
-use rustos::{library::qemu, entry_point, serial_print, serial_println, hlt_loop};
-
+use rustos::{library::qemu, serial_print, serial_println, hlt_loop};
+use bootloader::BootInfo;
+use bootloader::entry_point;
 
 entry_point!(wrap_should_failed);
 
-fn wrap_should_failed() {
+fn wrap_should_failed(boot_info: &'static BootInfo) -> ! {
     should_failed();
     serial_println!("[This test didn't panic!]");
     qemu::exit_qemu(qemu::QemuExitCode::Failed);

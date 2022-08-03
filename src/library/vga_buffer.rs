@@ -4,7 +4,7 @@ use core::fmt;
 // color enum
 // In VGA Text Mod, color has only 4bit for foreground color and 3bit for background color
 // which the 4-th bit is light version, thus the backround color didn't need
-#[allow(deadcode)]
+#[allow(dead_code)]
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
 #[repr(C)]
 enum Color {
@@ -178,6 +178,7 @@ pub fn _print(args: fmt::Arguments) {
 // }
 
 // test case
+#[allow(unused)]
 pub fn test_hello_word() {
     use core::fmt::Write;
     // init writer

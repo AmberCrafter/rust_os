@@ -5,19 +5,56 @@
 #![reexport_test_harness_main = "test_main"]
 
 #![feature(abi_x86_interrupt)]
+#![feature(alloc_error_handler)] 
+
+extern crate alloc;
 
 pub mod library;
-use library::{interrupts, gdt};
+use library::{interrupts, gdt, allocator, memory};
 pub use library::unittest;
+use linked_list_allocator::LockedHeap;
+#[allow(unused)]
 use core::panic::PanicInfo;
+#[allow(unused)]
+use bootloader::entry_point;
+#[allow(unused)]
+use bootloader::BootInfo;
+use x86_64::VirtAddr;
 
-pub fn init() {
+#[global_allocator]
+// static ALLOCATOR: library::allocator::Dummy = library::allocator::Dummy;
+static ALLOCATOR: LockedHeap = LockedHeap::empty();
+
+#[alloc_error_handler]
+fn alloc_error_handler(layout: alloc::alloc::Layout) -> ! {
+    panic!("allocatoion error: {:?}", layout)
+}
+
+
+pub fn init(boot_info: &'static BootInfo) {
     gdt::init();
     interrupts::init_idt();
     unsafe {
         interrupts::PICS.lock().initialize()
     };
     x86_64::instructions::interrupts::enable();
+
+    let phys_mem_offset = VirtAddr::new(boot_info.physical_memory_offset);
+    let mut mapper = unsafe {
+        memory::init(phys_mem_offset)
+    };
+    // let mut frame_allocator = memory::EmptyFrameAllocator;
+    let mut frame_allocator = unsafe {
+        memory::BootInfoFrameAllocator::init(&boot_info.memory_map)
+    };
+
+    allocator::init_heap(&mut mapper, &mut frame_allocator)
+        .expect("heap initializetion failed");
+
+    unsafe {
+        let heap_start = VirtAddr::new(allocator::HEAP_START as u64);
+        ALLOCATOR.lock().init(heap_start.as_mut_ptr(), allocator::HEAP_SIZE);
+    };
 }
 
 pub fn hlt_loop() -> ! {
@@ -27,7 +64,8 @@ pub fn hlt_loop() -> ! {
 }
 
 
-/// Entry point for `cargo test`
+
+// Entry point for `cargo test`
 #[cfg(test)]
 entry_point!(tests::main);
 // #[no_mangle]
@@ -39,11 +77,12 @@ entry_point!(tests::main);
 #[cfg(test)]
 mod tests{
     use super::{print, println};
+    use bootloader::BootInfo;
 
     use x86_64;
 
-    pub fn main() -> ! {
-        super::init(); // init interrupts
+    pub fn main(boot_info: &'static BootInfo) -> ! {
+        super::init(&boot_info); // init interrupts
         super::test_main();
         super::hlt_loop()
     }

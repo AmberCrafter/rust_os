@@ -9,12 +9,15 @@ use core::panic::PanicInfo;
 
 use lazy_static::lazy_static;
 use rustos::library::{self, qemu};
-use rustos::{entry_point, serial_print, serial_println, hlt_loop};
+use rustos::{serial_print, serial_println, hlt_loop};
 use x86_64::structures::idt::{InterruptDescriptorTable, InterruptStackFrame};
+use bootloader::entry_point;
+use bootloader::BootInfo;
+
 
 entry_point!(main);
 
-fn main() -> ! {
+fn main(boot_info: &'static BootInfo) -> ! {
     serial_print!("test/stack_overflow: testing...");
     library::gdt::init();
     init_test_idt();

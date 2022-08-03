@@ -1,5 +1,11 @@
 Diary
 
+[2022-08-03]
+1. memory managerment: heap and allocator design
+
+[2022-08-02]
+1. memory managerment: paging
+
 [2022-08-01]
 1. modified the library structure. Inspired by apogeeoak.
 ref. https://github.com/apogeeoak/os

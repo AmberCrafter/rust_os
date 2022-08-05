@@ -41,7 +41,7 @@ lazy_static! {
         idt[InterruptIndex::Timer.as_usize()]
             .set_handler_fn(timer_interrupt_handler);
         idt[InterruptIndex::Keyboard.as_usize()]
-            .set_handler_fn(keyboard_interrupt_handler);
+            .set_handler_fn(async_keyboard_interrupt_handler);
         idt.page_fault.set_handler_fn(page_fault_handler);
 
 
@@ -133,4 +133,22 @@ extern "x86-interrupt" fn page_fault_handler(
     println!("Error Code: {:?}", error_code);
     println!("{:#?}", stack_frame);
     hlt_loop()
+}
+
+extern "x86-interrupt" fn async_keyboard_interrupt_handler(
+    _stack_frame: InterruptStackFrame
+) {
+    use x86_64::instructions::port::Port;
+
+    let mut port = Port::new(0x60);
+    let scancode: u8 = unsafe {
+        port.read()
+    };
+    crate::library::concurrency::task::keyboard::add_scancode(scancode);
+    // crate::library::concurrency::task::keyboard::print_queue();
+
+    unsafe {
+        PICS.lock()
+            .notify_end_of_interrupt(InterruptIndex::Keyboard.as_u8())
+    }
 }

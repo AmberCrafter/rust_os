@@ -11,8 +11,8 @@
 extern crate alloc;
 
 pub mod library;
-use library::{interrupts, gdt, allocator, memory};
 pub use library::unittest;
+use library::{interrupts, gdt, allocator, memory, concurrency::task::keyboard};
 use linked_list_allocator::LockedHeap;
 #[allow(unused)]
 use core::panic::PanicInfo;
@@ -65,6 +65,9 @@ pub fn init(boot_info: &'static BootInfo) {
         
         ALLOCATOR.lock().init(allocator::HEAP_START, allocator::HEAP_SIZE);
     };
+    
+
+    // keyboard::init();
 }
 
 pub fn hlt_loop() -> ! {

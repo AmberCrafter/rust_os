@@ -49,31 +49,6 @@ impl ScancodeStream {
     }
 }
 
-// impl Stream for ScancodeStream {
-//     type Item = u8;
-
-//     fn poll_next(self: core::pin::Pin<&mut Self>, cx: &mut core::task::Context) -> core::task::Poll<Option<Self::Item>> {
-//         let queue = SCANCODE_QUEUE.try_get().expect("not initialized");
-//         println!("Stream queue length: {:?}", queue.len());
-//         let scancode = queue.pop();
-//         println!("scancode: {:?}", scancode);
-
-//         if let Ok(scancode) = scancode {
-//             return Poll::Ready(Some(scancode));
-//         }
-
-//         WAKER.register(cx.waker());
-
-//         match scancode {
-//             Ok(scancode) => {
-//                 WAKER.take();
-//                 Poll::Ready(Some(scancode))
-//             },
-//             Err(crossbeam_queue::PopError) => Poll::Pending
-//         }
-//     }
-// }
-
 use core::pin::Pin;
 use core::task::Context;
 impl Stream for ScancodeStream {
